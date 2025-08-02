@@ -1,0 +1,32 @@
+body{
+     background-image: url("bgp1.jpg");
+     background-color: black;
+     background-size: cover;
+     background-repeat: no-repeat;
+}
+h1 {
+    color: gray;
+    font-family: 'Lucida Sans';
+    text-align: left;
+}
+p1 {
+    color: aliceblue;
+    font-size: 2em;
+    padding-right: 100px;
+}
+.img2 {
+    display: inline-block;
+    margin: 20px; padding-left: 77%;
+}
+button1 {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+}

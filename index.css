@@ -1,0 +1,19 @@
+body{
+     background-image: url("20250524_022651.jpg");
+     background-color: black;
+     background-size: cover;
+     background-repeat: no-repeat;
+}
+h1 {
+    color: gray;
+    font-family: 'Lucida Sans';
+    text-align: left;
+}
+p1 {
+    color: aliceblue;
+    font-size: 2em;text-align: right;
+}
+.img2 {
+    display: inline-block;
+     padding-left: 45%;text-decoration: none;
+}

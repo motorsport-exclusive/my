@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Image Mini-Preview + Download</title>
+<style>
+  :root{
+    --bg:#0f1115; --card:#171923; --text:#e7e9ee; --muted:#9aa3b2;
+    --accent:#4f8cff; --ring:#6aa1ff55;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,Helvetica,sans-serif;
+    background:linear-gradient(180deg,#0f1115,#0c0e13);
+    color:var(--text);
+  }
+  header{
+    max-width:1100px; margin:32px auto 12px; padding:0 16px;
+    display:flex; align-items:end; justify-content:space-between; gap:12px;
+  }
+  h1{font-size:clamp(20px,3vw,28px); margin:0}
+  .hint{color:var(--muted); font-size:.95rem}
+  .gallery{
+    max-width:1100px; margin:0 auto; padding:16px;
+    display:grid; gap:16px;
+    grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  }
+  .card{
+    background:var(--card);
+    border:1px solid #202334;
+    border-radius:18px;
+    overflow:hidden;
+    position:relative;
+    box-shadow:0 6px 20px #00000055;
+    transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  }
+  .card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 10px 30px #00000070;
+    border-color:#2a2e42;
+  }
+  .thumb{
+    aspect-ratio:4/3;
+    width:100%; display:block; object-fit:cover;
+    background:#0b0d12;
+  }
+  .meta{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding:10px 12px 12px;
+  }
+  .name{
+    font-size:.95rem; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+  .size{font-size:.8rem; color:var(--muted)}
+  .actions{
+    position:absolute; inset:auto 10px 56px 10px; display:flex; gap:8px; justify-content:flex-end;
+    opacity:0; transform:translateY(6px); transition:opacity .18s ease, transform .18s ease;
+  }
+  .card:hover .actions{opacity:1; transform:translateY(0)}
+  .btn{
+    --pad:8px 12px;
+    appearance:none; border:1px solid #2a2e42; background:#131622; color:var(--text);
+    padding:var(--pad); border-radius:999px; font-size:.85rem; font-weight:600; cursor:pointer;
+    text-decoration:none; display:inline-flex; align-items:center; gap:8px;
+    transition:background .15s ease, border-color .15s ease, box-shadow .15s ease, transform .05s ease;
+  }
+  .btn:focus-visible{outline:0; box-shadow:0 0 0 4px var(--ring)}
+  .btn:hover{background:#0f1320; border-color:#3a4060}
+  .btn:active{transform:translateY(1px)}
+  .btn .icon{font-style:normal; line-height:1}
+  .btn.primary{background:var(--accent); border-color:transparent; color:#0a0f1c}
+  .btn.primary:hover{filter:brightness(1.05)}
+  footer{
+    max-width:1100px; margin:8px auto 40px; padding:0 16px; color:var(--muted); font-size:.9rem;
+  }
+  img{user-drag:none; -webkit-user-drag:none}
+</style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Downloads</h1>
+      <div class="hint">Mini previews with one-click downloads. Replace image paths with your own.</div>
+    </div>
+  </header>
+
+  <main class="gallery">
+    <!-- CARD 1 -->
+    <article class="card">
+      <img class="thumb" src="img1.JPG" alt="Image 1 preview">
+      <div class="actions">
+        <a class="btn" href="img1.JPG" target="_blank" rel="noopener">👁️ Preview</a>
+        <a class="btn primary" href="img1.JPG" download="img1.jpg">⬇️ Download</a>
+      </div>
+      <div class="meta">
+        <div class="name">img1.jpg</div>
+        <div class="size">~1 MB</div>
+      </div>
+    </article>
+
+    <!-- CARD 2 -->
+    <article class="card">
+      <img class="thumb" src="img2.JPG" alt="Image 2 preview">
+      <div class="actions">
+        <a class="btn" href="img2.JPG" target="_blank" rel="noopener">👁️ Preview</a>
+        <a class="btn primary" href="img2.JPG" download="img2.jpg">⬇️ Download</a>
+      </div>
+      <div class="meta">
+        <div class="name">img2.jpg</div>
+        <div class="size">~1 MB</div>
+      </div>
+    </article>
+  </main>
+
+  <footer>
+    Files will expire after 48 hours. Hosted on 
+    <a href="https://motorsportexclusive.com" target="_blank" rel="noopener">motorsportexclusive</a>.
+  </footer>
+</body>
+</html>

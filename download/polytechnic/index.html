@@ -75,13 +75,44 @@
     max-width:1100px; margin:8px auto 40px; padding:0 16px; color:var(--muted); font-size:.9rem;
   }
   img{user-drag:none; -webkit-user-drag:none}
+
+  /* Modal styles for in-page preview */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.8);
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-content {
+    max-width: 90%;
+    max-height: 90%;
+    border-radius: 8px;
+  }
+  .close {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    color: white;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .close:hover {
+    color: var(--accent);
+  }
 </style>
 </head>
 <body>
   <header>
     <div>
       <h1>Downloads</h1>
-      <div class="hint">Mini previews with one-click downloads. Replace image paths with your own.</div>
+      <div class="hint">Click preview to view inside the page, or download to save.</div>
     </div>
   </header>
 
@@ -90,8 +121,8 @@
     <article class="card">
       <img class="thumb" src="img1.JPG" alt="Image 1 preview">
       <div class="actions">
-        <a class="btn" href="img1.JPG" target="_blank" rel="noopener">👁️ Preview</a>
-        <a class="btn primary" href="img1.JPG" download="img1.jpg">⬇️ Download</a>
+        <button class="btn" onclick="openModal('img1.JPG')">👁️ Preview</button>
+        <button class="btn primary" onclick="downloadImage('img1.JPG', 'img1.jpg')">⬇️ Download</button>
       </div>
       <div class="meta">
         <div class="name">img1.jpg</div>
@@ -103,8 +134,8 @@
     <article class="card">
       <img class="thumb" src="img2.JPG" alt="Image 2 preview">
       <div class="actions">
-        <a class="btn" href="img2.JPG" target="_blank" rel="noopener">👁️ Preview</a>
-        <a class="btn primary" href="img2.JPG" download="img2.jpg">⬇️ Download</a>
+        <button class="btn" onclick="openModal('img2.JPG')">👁️ Preview</button>
+        <button class="btn primary" onclick="downloadImage('img2.JPG', 'img2.jpg')">⬇️ Download</button>
       </div>
       <div class="meta">
         <div class="name">img2.jpg</div>
@@ -113,10 +144,62 @@
     </article>
   </main>
 
+  <!-- Modal structure -->
+  <div id="previewModal" class="modal">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <img class="modal-content" id="modalImage">
+  </div>
+
   <footer>
-    Files will expire after 48 hours.
-    
+    Files will expire after 48 hours. Hosted on 
+    <a href="https://motorsportexclusive.com" target="_blank" rel="noopener">motorsportexclusive</a>.
   </footer>
+
+  <script>
+    function openModal(src) {
+      const modal = document.getElementById('previewModal');
+      const modalImg = document.getElementById('modalImage');
+      modal.style.display = 'flex';
+      modalImg.src = src;
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('previewModal');
+      modal.style.display = 'none';
+    }
+
+    // Close modal when clicking outside the image
+    window.onclick = function(event) {
+      const modal = document.getElementById('previewModal');
+      if (event.target === modal) {
+        closeModal();
+      }
+    }
+
+    // Function to force download the hosted image
+    function downloadImage(src, filename) {
+      fetch(src)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.blob();
+        })
+        .then(blob => {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        })
+        .catch(error => {
+          console.error('Download failed:', error);
+          alert('Failed to download the image. Please check if the file is accessible.');
+        });
+    }
+  </script>
 </body>
 </html>
-

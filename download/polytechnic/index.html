@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Image Mini-Preview + Download</title>
+<title>Faculty Image Gallery</title>
 <style>
   :root{
     --bg:#0f1115; --card:#171923; --text:#e7e9ee; --muted:#9aa3b2;
@@ -52,7 +52,6 @@
   .name{
     font-size:.95rem; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
   }
-  .size{font-size:.8rem; color:var(--muted)}
   .actions{
     position:absolute; inset:auto 10px 56px 10px; display:flex; gap:8px; justify-content:flex-end;
     opacity:0; transform:translateY(6px); transition:opacity .18s ease, transform .18s ease;
@@ -68,7 +67,6 @@
   .btn:focus-visible{outline:0; box-shadow:0 0 0 4px var(--ring)}
   .btn:hover{background:#0f1320; border-color:#3a4060}
   .btn:active{transform:translateY(1px)}
-  .btn .icon{font-style:normal; line-height:1}
   .btn.primary{background:var(--accent); border-color:transparent; color:#0a0f1c}
   .btn.primary:hover{filter:brightness(1.05)}
   footer{
@@ -117,7 +115,7 @@
   </header>
 
   <main class="gallery">
-    <!-- Auto listing for all faculty images -->
+    <!-- Cards for each image -->
     <article class="card">
       <img class="thumb" src="IMG_2943.jpg" alt="IMG_2943 preview">
       <div class="actions">
@@ -189,8 +187,7 @@
   </div>
 
   <footer>
-    Files will expire after 48 hours. Hosted on 
-    <a href="#" target="_blank" rel="noopener">motorsportexclusive</a>.
+    Local gallery demo — open this file in your browser to view & download images.
   </footer>
 
   <script>
@@ -214,29 +211,14 @@
       }
     }
 
-    // Function to force download the hosted image
+    // Local download method
     function downloadImage(src, filename) {
-      fetch(src)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          return response.blob();
-        })
-        .then(blob => {
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = filename;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
-        })
-        .catch(error => {
-          console.error('Download failed:', error);
-          alert('Failed to download the image. Please check if the file is accessible.');
-        });
+      const a = document.createElement('a');
+      a.href = src;         // direct file link
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     }
   </script>
 </body>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Event Upload</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css.css">
+
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Upload files for the Event</h1>
+      <form id="eventForm" novalidate>
+        <label for="eventName">Event Name</label>
+        <input id="eventName" name="EventName" type="text" placeholder="e.g., Freshers Day 2025" required />
+
+        <div class="two-col">
+          <!-- File 1 -->
+          <div>
+            <label>File Option 1</label>
+            <div id="dz1" class="dz">
+              <input type="file" id="file1" hidden />
+              <div id="f1info">No file selected</div>
+              <div class="file-meta" id="f1meta">Click or drag & drop</div>
+              <img id="f1preview" class="preview" />
+              <video id="f1video" class="preview" controls></video>
+            </div>
+          </div>
+          <!-- File 2 -->
+          <div>
+            <label>File Option 2</label>
+            <div id="dz2" class="dz">
+              <input type="file" id="file2" hidden />
+              <div id="f2info">No file selected</div>
+              <div class="file-meta" id="f2meta">Click or drag & drop</div>
+              <img id="f2preview" class="preview" />
+              <video id="f2video" class="preview" controls></video>
+            </div>
+          </div>
+        </div>
+
+        <small style="color:#9ca3af;display:block;margin-top:10px">⚠️ Files above 50 MB may fail due to Apps Script limits.</small>
+
+        <div class="btns">
+          <button type="submit" class="primary" id="submitBtn">Submit</button>
+          <button type="button" class="ghost" id="resetBtn">Reset</button>
+        </div>
+        <div id="msg" class="msg"></div>
+      </form>
+    </div>
+  </div>
+  <!-- Upload Note -->
+<div class="note">
+  ⏳ Uploading can take up to <b>60 seconds</b>. Larger files may take longer. <br>
+  Please <u>do not leave this page</u> until you see a success message.
+</div>
+
+<script>
+
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwyJfHtr77huONRvA-IwjtyqXiDv6kW2wS9t9lRZk1aIs-Rt980IYY42OsJtixLSN3r/exec"; // change this!
+
+    const $ = id => document.getElementById(id);
+    const form = $("eventForm"), msg=$("msg"), submitBtn=$("submitBtn"), resetBtn=$("resetBtn");
+    const inputs=[{dz:$("dz1"),input:$("file1"),info:$("f1info"),meta:$("f1meta"),img:$("f1preview"),vid:$("f1video")},
+                  {dz:$("dz2"),input:$("file2"),info:$("f2info"),meta:$("f2meta"),img:$("f2preview"),vid:$("f2video")}];
+
+    inputs.forEach(({dz,input,info,meta,img,vid})=>{
+      dz.addEventListener("click",()=>input.click());
+      ["dragenter","dragover"].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add("drag");}));
+      ["dragleave","drop"].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove("drag");}));
+      dz.addEventListener("drop",e=>{if(e.dataTransfer.files?.length){input.files=e.dataTransfer.files; input.dispatchEvent(new Event("change"));}});
+      input.addEventListener("change",()=>{
+        img.style.display=vid.style.display="none"; info.textContent="No file selected"; meta.textContent="Click or drag & drop";
+        if(input.files.length){
+          const f=input.files[0];
+          if(f.size>50*1024*1024){ // >50MB
+            info.textContent=f.name;
+            meta.textContent="❌ Too large ("+(f.size/1024/1024).toFixed(1)+" MB). Limit ~50 MB.";
+            return;
+          }
+          info.textContent=f.name;
+          meta.textContent=(f.size/1024/1024).toFixed(2)+" MB • "+(f.type||"unknown");
+          const url=URL.createObjectURL(f);
+          if(f.type.startsWith("image/")){ img.src=url; img.style.display="block"; }
+          else if(f.type.startsWith("video/")){ vid.src=url; vid.style.display="block"; }
+        }
+      });
+    });
+
+    function fileToObj(file){
+      return new Promise((resolve,reject)=>{
+        const r=new FileReader();
+        r.onload=e=>{
+          const [meta,b64]=String(e.target.result).split(",");
+          const mime=(meta.match(/data:(.*?);base64/)||[])[1]||"application/octet-stream";
+          const safeName=new Date().toISOString().replace(/[:.]/g,"-")+"__"+file.name;
+          resolve({fileName:safeName,mimeType:mime,data:b64});
+        };
+        r.onerror=reject; r.readAsDataURL(file);
+      });
+    }
+
+    form.addEventListener("submit",async e=>{
+      e.preventDefault(); msg.className="msg"; msg.textContent="Submitting…"; msg.style.display="block"; submitBtn.disabled=true;
+      try{
+        const event=$("eventName").value.trim(); if(!event) throw new Error("Enter Event Name.");
+        const payload={EventName:event};
+        for(const [i,{input}] of inputs.entries()){
+          if(input.files.length){
+            const f=input.files[0]; if(f.size>50*1024*1024) throw new Error("File "+f.name+" is too big.");
+            payload["fileData"+(i+1)]=await fileToObj(f);
+          }
+        }
+        const res=await fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload)});
+        let data; try{data=await res.json();}catch{}
+        if(res.ok && data?.status==="success"){ msg.className="msg ok"; msg.textContent="Uploaded successfully!"; form.reset(); inputs.forEach(({input})=>input.dispatchEvent(new Event("change"))); }
+        else throw new Error(data?.message||"Upload failed");
+      }catch(err){ msg.className="msg err"; msg.textContent=err.message; }
+      finally{ submitBtn.disabled=false; setTimeout(()=>msg.style.display="none",5000);}
+    });
+    resetBtn.addEventListener("click",()=>{form.reset();inputs.forEach(({input})=>input.dispatchEvent(new Event("change")));msg.style.display="none";});
+
+  </script>
+</body>
+</html>
